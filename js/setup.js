@@ -16,10 +16,10 @@ var getRandom = function (min, max) {
 var createObj = function (quantity) {
   for (var i = 0; i < quantity; i++) {
     wizards[i] = {
-      name: names[getRandom(0, 8)],
-      subName: subNames[getRandom(0, 7)],
-      coatColor: coatColors[getRandom(0, 5)],
-      eyesColor: eyesColors[getRandom(0, 4)]
+      name: names[getRandom(0, 9)],
+      subName: subNames[getRandom(0, 8)],
+      coatColor: coatColors[getRandom(0, 6)],
+      eyesColor: eyesColors[getRandom(0, 5)]
     };
   }
 
@@ -34,7 +34,7 @@ var template = document.querySelector('#similar-wizard-template').content.queryS
 var renderWizard = function (wizard) {
   var wizardElement = template.cloneNode(true);
 
-  wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
+  wizardElement.querySelector('.setup-similar-label').textContent = wizard.name + ' ' + wizard.subName;
   wizardElement.querySelector('.wizard-coat').style.fill = wizard.coatColor;
   wizardElement.querySelector('.wizard-eyes').style.fill = wizard.eyesColor;
 
