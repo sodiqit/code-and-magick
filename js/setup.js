@@ -10,16 +10,18 @@ var eyesColors = ['black', 'red', 'blue', 'yellow', 'green'];
 var wizards = [];
 
 var getRandom = function (min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
+  var rand = min + Math.random() * (max + 1 - min);
+  rand = Math.floor(rand);
+  return rand;
 };
 
 var createObj = function (quantity) {
   for (var i = 0; i < quantity; i++) {
     wizards[i] = {
-      name: names[getRandom(0, 9)],
-      subName: subNames[getRandom(0, 8)],
-      coatColor: coatColors[getRandom(0, 6)],
-      eyesColor: eyesColors[getRandom(0, 5)]
+      name: names[getRandom(0, 8)],
+      subName: subNames[getRandom(0, 7)],
+      coatColor: coatColors[getRandom(0, 5)],
+      eyesColor: eyesColors[getRandom(0, 4)]
     };
   }
 
