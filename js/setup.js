@@ -1,6 +1,7 @@
 'use strict';
 
-document.querySelector('.setup').classList.remove('hidden');
+// render wizards - start
+
 document.querySelector('.setup-similar').classList.remove('hidden');
 
 var names = ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
@@ -49,3 +50,63 @@ for (var i = 0; i < wizards.length; i++) {
 }
 
 setupSimilarList.appendChild(fragment);
+
+// render wizards - end
+
+
+// TODO: FIX LISTENERS(REMOVE THEY)
+var setup = document.querySelector('.setup');
+var setupIcon = document.querySelector('.setup-open-icon');
+var setupClose = setup.querySelector('.setup-close');
+var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
+
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+var openPopup = function () {
+  setup.classList.remove('hidden');
+
+  document.addEventListener('keydown', onPopupEscPress);
+};
+
+var closePopup = function () {
+  setup.classList.add('hidden');
+
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+setupIcon.addEventListener('click', openPopup);
+
+setupIcon.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    openPopup();
+  }
+});
+
+setupClose.addEventListener('click', closePopup);
+
+setupClose.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closePopup();
+  }
+});
+
+var userNameInput = setup.querySelector('.setup-user-name');
+
+userNameInput.addEventListener('invalid', function () {
+  if (userNameInput.validity.tooShort) {
+    userNameInput.setCustomValidity('Имя должно состоять минимум из 2-ух символов');
+  } else if (userNameInput.validity.tooLong) {
+    userNameInput.setCustomValidity('Имя не должно превышать 25-ти символов');
+  } else if (userNameInput.validity.valueMissing) {
+    userNameInput.setCustomValidity('Обязательное поле!');
+  } else {
+    userNameInput.setCustomValidity('');
+  }
+});
+
+
