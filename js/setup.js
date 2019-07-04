@@ -8,6 +8,7 @@ var names = ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кри
 var subNames = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
 var coatColors = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
 var eyesColors = ['black', 'red', 'blue', 'yellow', 'green'];
+var fireballColors = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 var wizards = [];
 
 var getRandom = function (min, max) {
@@ -54,12 +55,13 @@ setupSimilarList.appendChild(fragment);
 // render wizards - end
 
 
-// TODO: FIX LISTENERS(REMOVE THEY)
+// open/close popup and validation - start
 var setup = document.querySelector('.setup');
 var setupIcon = document.querySelector('.setup-open-icon');
 var setupClose = setup.querySelector('.setup-close');
 var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
+var userNameInput = setup.querySelector('.setup-user-name');
 
 var onPopupEscPress = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
@@ -95,7 +97,9 @@ setupClose.addEventListener('keydown', function (evt) {
   }
 });
 
-var userNameInput = setup.querySelector('.setup-user-name');
+userNameInput.addEventListener('focus', function () {
+  document.removeEventListener('keydown', onPopupEscPress);
+});
 
 userNameInput.addEventListener('invalid', function () {
   if (userNameInput.validity.tooShort) {
@@ -109,4 +113,43 @@ userNameInput.addEventListener('invalid', function () {
   }
 });
 
+// open/close popup and validation - end
+
+// change color eyes, coat - start
+
+var wizardEyes = document.querySelector('.wizard-eyes');
+var wizardCoat = document.querySelector('.wizard-coat');
+var wizardFireball = document.querySelector('.setup-fireball-wrap');
+var summ = 0;
+var colorFireballInput = document.querySelector('input[name="fireball-color"]');
+var colorCoatInput = document.querySelector('input[name="coat-color"]');
+var colorEyesInput = document.querySelector('input[name="eyes-color"]');
+var changeColors = function (item, colors, number, colorInput) {
+  ++summ;
+
+  if (summ === number) {
+    summ = 0;
+  }
+
+  item.style.fill = colors[summ];
+  colorInput.value = colors[summ];
+
+  if (item === wizardFireball) {
+    wizardFireball.style.background = fireballColors[summ];
+  }
+};
+
+wizardEyes.addEventListener('click', function () {
+  changeColors(wizardEyes, eyesColors, 5, colorEyesInput);
+});
+
+wizardCoat.addEventListener('click', function () {
+  changeColors(wizardCoat, coatColors, 6, colorCoatInput);
+});
+
+wizardFireball.addEventListener('click', function () {
+  changeColors(wizardFireball, fireballColors, 5, colorFireballInput);
+});
+
+// change color eyes, coat, fireball - end
 
