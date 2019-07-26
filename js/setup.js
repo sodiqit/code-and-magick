@@ -2,14 +2,13 @@
 
 // render wizards - start
 
-document.querySelector('.setup-similar').classList.remove('hidden');
-
 var coatColors = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
 var eyesColors = ['black', 'red', 'blue', 'yellow', 'green'];
 var fireballColors = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 
 var setupSimilarList = document.querySelector('.setup-similar-list');
 var template = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item');
+
 
 var renderWizard = function (wizard) {
   var wizardElement = template.cloneNode(true);
@@ -21,26 +20,53 @@ var renderWizard = function (wizard) {
   return wizardElement;
 };
 
-var change = function (x, y, name) {
-  var a = name[x];
+var wizards = [];
+var coatColor;
+var eyesColor;
 
-  name[x] = name[y];
-  name[y] = a;
-};
+var getRank = function (it) {
+  var rank = 0;
 
-window.backend.load(function (wizards) {
-  var fragment = document.createDocumentFragment();
-
-  for (var j = 0; j < wizards.length; j++) {
-    change(window.getRandom(0, wizards.length - 1), window.getRandom(0, wizards.length - 1), wizards);
+  if (it.colorEyes === eyesColor && it.colorCoat === coatColor) {
+    rank += 3;
+  } else if (it.colorCoat === coatColor) {
+    rank += 2;
+  } else if (it.colorEyes === eyesColor) {
+    rank += 1;
+  } else {
+    rank = 0;
   }
 
+  return rank;
+};
+
+var successHandler = function (data) {
+  wizards = data;
+  updateWizard();
+};
+
+var updateWizard = function () {
+  render(wizards.slice().sort(function (left, right) {
+    var rankDiff = getRank(right) - getRank(left);
+    if (rankDiff === 0) {
+      rankDiff = wizards.indexOf(left) - wizards.indexOf(right);
+    }
+    return rankDiff;
+  }));
+  document.querySelector('.setup-similar').classList.remove('hidden');
+};
+
+var render = function (wizard) {
+  var fragment = document.createDocumentFragment();
+  setupSimilarList.innerHTML = '';
   for (var i = 0; i < 4; i++) {
-    fragment.appendChild(renderWizard(wizards[i]));
+    fragment.appendChild(renderWizard(wizard[i]));
   }
 
   setupSimilarList.appendChild(fragment);
-}, window.error);
+};
+
+window.backend.load(successHandler, window.error);
 
 // render wizards - end
 
@@ -114,31 +140,48 @@ var summ = 0;
 var colorFireballInput = document.querySelector('input[name="fireball-color"]');
 var colorCoatInput = document.querySelector('input[name="coat-color"]');
 var colorEyesInput = document.querySelector('input[name="eyes-color"]');
-var changeColors = function (item, colors, number, colorInput) {
-  ++summ;
 
-  if (summ === number) {
+var changeNumber = function (number) {
+  summ = summ + 1;
+
+  if (summ >= number) {
     summ = 0;
-  }
-
-  item.style.fill = colors[summ];
-  colorInput.value = colors[summ];
-
-  if (item === wizardFireball) {
-    wizardFireball.style.background = fireballColors[summ];
   }
 };
 
+var changeEyesColor = function () {
+  changeNumber(5);
+
+  wizardEyes.style.fill = eyesColors[summ];
+  colorEyesInput.value = eyesColors[summ];
+  eyesColor = colorEyesInput.value;
+};
+
+var changeFireballColor = function () {
+  changeNumber(5);
+
+  wizardFireball.style.background = fireballColors[summ];
+  colorFireballInput.value = fireballColors[summ];
+};
+
+var changeCoatColor = function () {
+  changeNumber(6);
+
+  wizardCoat.style.fill = coatColors[summ];
+  colorCoatInput.value = coatColors[summ];
+  coatColor = colorCoatInput.value;
+};
+
 wizardEyes.addEventListener('click', function () {
-  changeColors(wizardEyes, eyesColors, 5, colorEyesInput);
+  changeEyesColor();
+  window.debounce(updateWizard);
 });
 
 wizardCoat.addEventListener('click', function () {
-  changeColors(wizardCoat, coatColors, 6, colorCoatInput);
+  changeCoatColor();
+  window.debounce(updateWizard);
 });
 
-wizardFireball.addEventListener('click', function () {
-  changeColors(wizardFireball, fireballColors, 5, colorFireballInput);
-});
+wizardFireball.addEventListener('click', changeFireballColor);
 
 // change color eyes, coat, fireball - end
